@@ -20,10 +20,10 @@ const ProductCategory = () => {
     <div className="mt-16">
       {searchCategory && (
         <div className="flex flex-col items-end w-max">
-          <p className="text-2xl font-medium">
+          <p className="text-3xl md:text-4xl font-semibold text-green-800">
             {searchCategory.text.toUpperCase()}
           </p>
-          <div className="w-16 h-0.5 bg-primary rounded-full"></div>
+          <div className="w-28 h-1 bg-primary rounded-full mt-2"></div>
         </div>
       )}
       {filteredProducts.length > 0 ? (

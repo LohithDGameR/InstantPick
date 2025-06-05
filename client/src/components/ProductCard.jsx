@@ -2,7 +2,7 @@ import React from "react";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, bestSeller }) => {
   const { currency, addToCart, removeFromCart, cartItems, navigate } =
     useAppContext();
 
@@ -15,7 +15,14 @@ const ProductCard = ({ product }) => {
           );
           scrollTo(0, 0);
         }}
-        className="border border-gray-500/20 rounded-md md:px-4 px-3 py-2 bg-white min-w-56 max-w-56 w-full">
+        className="relative border border-gray-200 rounded-xl md:px-4 px-3 py-2 min-w-56 max-w-56 w-full bg-gradient-to-br from-white via-gray-50 to-gray-100 shadow-sm hover:shadow-md">
+        {/* Best Seller Tag */}
+        {bestSeller && (
+          <span className="absolute top-0 right-0 bg-primary-dull text-xs font-semibold text-white px-2 py-1 rounded-bl-md rounded-tr-md shadow">
+            Best Seller
+          </span>
+        )}
+
         <div className="group cursor-pointer flex items-center justify-center px-2">
           <img
             className="group-hover:scale-105 transition max-w-26 md:max-w-36"
@@ -23,6 +30,7 @@ const ProductCard = ({ product }) => {
             alt={product.name}
           />
         </div>
+
         <div className="text-gray-500/60 text-sm">
           <p>{product.category}</p>
           <p className="text-gray-700 font-medium text-lg truncate w-full">
@@ -41,6 +49,7 @@ const ProductCard = ({ product }) => {
               ))}
             <p>(4)</p>
           </div>
+
           <div className="flex items-end justify-between mt-3">
             <p className="md:text-xl text-base font-medium text-primary">
               {currency}
@@ -50,6 +59,7 @@ const ProductCard = ({ product }) => {
                 {product.price}
               </span>
             </p>
+
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -57,7 +67,7 @@ const ProductCard = ({ product }) => {
               className="text-primary">
               {!cartItems[product._id] ? (
                 <button
-                  className="flex items-center justify-center gap-1 bg-primary/10 border border-primary/40 md:w-[80px] w-[64px] h-[34px] rounded cursor-pointer"
+                  className="flex items-center justify-center gap-1 bg-primary/10 border border-primary md:w-[80px] w-[64px] h-[34px] rounded cursor-pointer"
                   onClick={() => addToCart(product._id)}>
                   <img src={assets.cart_icon} alt="cart_icon" />
                   Add

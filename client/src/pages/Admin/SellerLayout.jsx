@@ -31,45 +31,60 @@ const SellerLayout = () => {
   };
 
   return (
-    <>
-      <div className="flex items-center justify-between px-4 md:px-8 border-b border-gray-300 bg-white">
-        <Link to="/">
-          <img
-            src={assets.logo}
-            alt="logo"
-            className="h-[80px] w-auto md:w-[200px] lg:w-[250px] object-contain cursor-pointer "
-          />
-        </Link>
-        <div className="flex items-center gap-5 text-gray-500">
-          <p>Hi! Admin</p>
-          <button
-            onClick={logout}
-            className="border text-white bg-red-500 rounded-full text-sm px-4 py-1 cursor-pointer">
-            Logout
-          </button>
+    <div className="min-h-screen flex bg-white text-emerald-900">
+      {/* Sidebar */}
+      <aside className="w-20 md:w-64 bg-gradient-to-b from-green-800 to-green-600 text-white shadow-lg">
+        <div className="flex flex-col h-full">
+          <Link to="/" className="flex justify-center md:justify-start px-4 mb-8">
+            <img
+              src={assets.logo}
+              alt="logo"
+              className="h-10 md:h-14 w-auto object-contain"
+            />
+          </Link>
+          <nav className="flex-1 space-y-2">
+            {sidebarLinks.map((item) => (
+              <NavLink
+                to={item.path}
+                key={item.name}
+                end={item.path === "/seller"}
+                className={({ isActive }) =>
+                  `flex items-center px-4 py-3 gap-4 rounded-md mx-2 transition-all duration-200
+                  ${
+                    isActive
+                      ? "bg-white text-green-900 font-semibold shadow"
+                      : "hover:bg-green-700 text-white/90"
+                  }`
+                }>
+                <img src={item.icon} alt={item.name} className="w-6 h-6" />
+                <span className="hidden md:inline">{item.name}</span>
+              </NavLink>
+            ))}
+          </nav>
+          <div className="p-4">
+            <button
+              onClick={logout}
+              className="w-full text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md transition cursor-pointer">
+              Logout
+            </button>
+          </div>
         </div>
+      </aside>
+
+      {/* Main Layout */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="bg-white backdrop-blur-sm border-b border-white shadow-sm px-4 py-3 flex justify-between items-center">
+          <p className="text-lg font-medium hidden sm:block">Admin Dashboard</p>
+          <p className="text-sm text-green-700">Hi, Admin 👋</p>
+        </header>
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto px-4 md:px-8 py-6">
+          <Outlet />
+        </main>
       </div>
-      <div className="flex">
-        <div className="md:w-64 w-16 border-r h-[95vh] text-base border-gray-300 pt-4 flex flex-col ">
-          {sidebarLinks.map((item) => (
-            <NavLink
-              to={item.path}
-              key={item.name}
-              end={item.path === "/seller"}
-              className={({ isActive }) => `flex items-center py-3 px-4 gap-3 
-                            ${
-                              isActive
-                                ? "border-r-4 md:border-r-[6px] bg-primary/10 border-primary text-primary"
-                                : "hover:bg-gray-100/90 border-white"
-                            }`}>
-              <img src={item.icon} alt="" className="w-7 h-7" />
-              <p className="md:block hidden text-center">{item.name}</p>
-            </NavLink>
-          ))}
-        </div>
-        <Outlet />
-      </div>
-    </>
+    </div>
   );
 };
 

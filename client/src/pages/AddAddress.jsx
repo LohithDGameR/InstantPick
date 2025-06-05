@@ -3,10 +3,10 @@ import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 
-// Input Field Component
+// Input Field Component with enhanced styling
 const InputField = ({ type, placeholder, name, handleChange, address }) => (
   <input
-    className="w-full px-2 py-2.5 border border-gray-500/30 rounded outline-none text-gray-500 focus:border-primary transition"
+    className="w-full px-4 py-2.5 border border-green-300 rounded-lg outline-none text-green-800 focus:border-primary transition duration-200 placeholder-green-500"
     type={type}
     placeholder={placeholder}
     onChange={handleChange}
@@ -38,7 +38,7 @@ const AddAddress = () => {
       ...prevAddress,
       [name]: value,
     }));
-    console.log(address);
+    // console.log(address); // Removed console.log for cleaner output, keep if needed for debugging
   };
 
   const onSubmitHandler = async (e) => {
@@ -61,17 +61,26 @@ const AddAddress = () => {
     if (!user) {
       navigate("/cart");
     }
-  }, [ user, navigate ]);
+  }, [user, navigate]);
 
   return (
-    <div className="mt-16 pb-16">
-      <p className="text-2xl md:text-3xl text-gray-500">
-        Add Shipping <span className="font-semibold text-primary">Address</span>
-      </p>
-      <div className="flex flex-col-reverse md:flex-row justify-between mt-10">
-        <div className="flex-1 max-w-md">
-          <form onSubmit={onSubmitHandler} className="space-y-3 mt-6 text-sm">
-            <div className="grid grid-cols-2 gap-4">
+    <div className="flex flex-col mt-8 md:mt-12 max-w-6xl mx-auto px-4 md:px-8 gap-8 pb-16">
+      {/* Page Title */}
+      <div className="flex flex-col items-start w-max mb-6">
+        <p className="text-2xl md:text-3xl font-semibold text-green-800">
+          Add Shipping{" "}
+          <span className="font-semibold text-primary">Address</span>
+        </p>
+        <div className="w-24 h-0.5 bg-primary rounded-full mt-2"></div>{" "}
+        {/* Underline for title */}
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-10">
+        {/* Address Form Section */}
+        <div className="flex-1 w-full max-w-md bg-white p-6 md:p-8 rounded-lg shadow-md order-2 md:order-1">
+          <form onSubmit={onSubmitHandler} className="space-y-4">
+            {/* Name Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 handleChange={handleChange}
                 address={address}
@@ -88,6 +97,7 @@ const AddAddress = () => {
               />
             </div>
 
+            {/* Other Fields */}
             <InputField
               handleChange={handleChange}
               address={address}
@@ -103,7 +113,8 @@ const AddAddress = () => {
               placeholder="Street"
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* City/State Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 handleChange={handleChange}
                 address={address}
@@ -120,7 +131,8 @@ const AddAddress = () => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Zipcode/Country Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 handleChange={handleChange}
                 address={address}
@@ -137,6 +149,7 @@ const AddAddress = () => {
               />
             </div>
 
+            {/* Phone Field */}
             <InputField
               handleChange={handleChange}
               address={address}
@@ -145,16 +158,21 @@ const AddAddress = () => {
               placeholder="Phone"
             />
 
-            <button className="w-full mt-6 bg-primary text-white py-3 hover:bg-primary-dull transition cursor-pointer uppercase">
+            {/* Save Address Button */}
+            <button className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition rounded-full shadow-lg">
               Save address
             </button>
           </form>
         </div>
-        <img
-          className="md:mr-16 mb-16 md:mt-0"
-          src={assets.add_address_iamge}
-          alt="Add Address"
-        />
+
+        {/* Image Section */}
+        <div className="flex-shrink-0 order-1 md:order-2">
+          <img
+            className="w-full max-w-sm md:max-w-md mx-auto md:mx-0 rounded-lg shadow-md object-cover"
+            src={assets.add_address_iamge}
+            alt="Add Address"
+          />
+        </div>
       </div>
     </div>
   );

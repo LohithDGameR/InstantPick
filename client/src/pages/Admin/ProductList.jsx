@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 const ProductList = () => {
   const { products, currency, axios, fetchProducts } = useAppContext();
 
-  const togglestock = async (id, inStock) => {
+  const toggleStock = async (id, inStock) => {
     try {
       const { data } = await axios.post("/api/product/stock", { id, inStock });
       if (data.success) {
@@ -20,46 +20,50 @@ const ProductList = () => {
   };
 
   return (
-    <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll flex flex-col justify-between">
-      <div className="w-full md:p-10 p-4">
-        <h2 className="pb-4 text-lg font-medium">All Products</h2>
-        <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-          <table className="md:table-auto table-fixed w-full overflow-hidden">
-            <thead className="text-gray-900 text-sm text-left">
+    <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll p-4 md:p-10">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-2xl font-semibold text-green-800 mb-6">🌱 All Products</h2>
+
+        <div className="overflow-x-auto rounded-lg border border-green-200 shadow-md bg-white">
+          <table className="min-w-full divide-y divide-green-100">
+            <thead className="bg-green-100 text-green-900 text-sm font-semibold">
               <tr>
-                <th className="px-4 py-3 font-semibold truncate">Product</th>
-                <th className="px-4 py-3 font-semibold truncate">Category</th>
-                <th className="px-4 py-3 font-semibold truncate hidden md:block">
-                  Selling Price
-                </th>
-                <th className="px-4 py-3 font-semibold truncate">In Stock</th>
+                <th className="px-4 py-3 text-left">Product</th>
+                <th className="px-4 py-3 text-left">Category</th>
+                <th className="px-4 py-3 text-left hidden md:table-cell">Selling Price</th>
+                <th className="px-4 py-3 text-left">In Stock</th>
               </tr>
             </thead>
-            <tbody className="text-sm text-gray-500">
+            <tbody className="bg-white divide-y divide-green-100 text-green-800 text-sm">
               {products.map((product) => (
-                <tr key={product._id} className="border-t border-gray-500/20">
-                  <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
-                    <div className="border border-gray-300 rounded p-2">
+                <tr key={product._id}>
+                  <td className="px-4 py-3 flex items-center gap-3">
+                    <div className="w-16 h-16 overflow-hidden border border-green-200 rounded-md">
                       <img
                         src={product.image[0]}
-                        alt="Product"
-                        className="w-16"
+                        alt={product.name}
+                        className="w-full h-full object-cover"
                       />
                     </div>
-                    <span className="truncate max-sm:hidden w-full">
-                      {product.name}
+                    <span className="truncate font-medium">{product.name}</span>
+                  </td>
+                  <td className="px-4 py-3 capitalize">{product.category}</td>
+                  <td className="px-4 py-3 hidden md:table-cell">
+                    <span className="text-green-700 font-medium">
+                      {currency}
+                      {product.offerPrice}
                     </span>
                   </td>
-                  <td className="px-4 py-3">{product.category}</td>
-                  <td className="px-4 py-3 max-sm:hidden">
-                    {currency}
-                    {product.offerPrice}
-                  </td>
                   <td className="px-4 py-3">
-                    <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
-                      <input onClick={()=> togglestock(product._id, !product.inStock)} checked={product.inStock} type="checkbox" className="sr-only peer" />
-                      <div className="w-12 h-7 bg-slate-300 rounded-full peer peer-checked:bg-blue-600 transition-colors duration-200"></div>
-                      <span className="dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-5"></span>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={product.inStock}
+                        onChange={() => toggleStock(product._id, !product.inStock)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-12 h-7 bg-green-200 peer-focus:outline-none peer-checked:bg-green-600 rounded-full transition duration-300"></div>
+                      <div className="dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 peer-checked:translate-x-5"></div>
                     </label>
                   </td>
                 </tr>
