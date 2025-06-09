@@ -13,9 +13,14 @@ const ProductCard = ({ product, bestSeller }) => {
           navigate(
             `/products/${product.category.toLowerCase()}/${product._id}`
           );
-          scrollTo(0, 0);
+          // Using window.scrollTo(0, 0) for consistent scroll behavior
+          window.scrollTo(0, 0);
         }}
-        className="relative border border-gray-200 rounded-xl md:px-4 px-3 py-2 min-w-56 max-w-56 w-full bg-gradient-to-br from-white via-gray-50 to-gray-100 shadow-sm hover:shadow-md">
+        // FIX: Removed min-w-56 and max-w-56 to allow fluid width on smaller screens.
+        // The parent div in BestSeller now correctly controls w-full / sm:w-1/2 / md:w-56.
+        // Added `w-full` to ensure it takes available space by default before breakpoints.
+        className="relative border border-gray-200 rounded-xl md:px-4 px-3 py-2 w-full bg-gradient-to-br from-white via-gray-50 to-gray-100 shadow-sm hover:shadow-md"
+      >
         {/* Best Seller Tag */}
         {bestSeller && (
           <span className="absolute top-0 right-0 bg-primary-dull text-xs font-semibold text-white px-2 py-1 rounded-bl-md rounded-tr-md shadow">
@@ -64,11 +69,13 @@ const ProductCard = ({ product, bestSeller }) => {
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              className="text-primary">
+              className="text-primary"
+            >
               {!cartItems[product._id] ? (
                 <button
                   className="flex items-center justify-center gap-1 bg-primary/10 border border-primary md:w-[80px] w-[64px] h-[34px] rounded cursor-pointer"
-                  onClick={() => addToCart(product._id)}>
+                  onClick={() => addToCart(product._id)}
+                >
                   <img src={assets.cart_icon} alt="cart_icon" />
                   Add
                 </button>
@@ -78,7 +85,8 @@ const ProductCard = ({ product, bestSeller }) => {
                     onClick={() => {
                       removeFromCart(product._id);
                     }}
-                    className="cursor-pointer text-md px-2 h-full">
+                    className="cursor-pointer text-md px-2 h-full"
+                  >
                     -
                   </button>
                   <span className="w-5 text-center">
@@ -88,7 +96,8 @@ const ProductCard = ({ product, bestSeller }) => {
                     onClick={() => {
                       addToCart(product._id);
                     }}
-                    className="cursor-pointer text-md px-2 h-full">
+                    className="cursor-pointer text-md px-2 h-full"
+                  >
                     +
                   </button>
                 </div>

@@ -168,7 +168,7 @@ const AddAddress = () => {
         {/* Image Section */}
         <div className="flex-shrink-0 order-1 md:order-2">
           <img
-            className="w-full max-w-sm md:max-w-md mx-auto md:mx-0 rounded-lg shadow-md object-cover"
+            className="w-full max-w-sm md:max-w-md mx-auto md:mx-0"
             src={assets.add_address_iamge}
             alt="Add Address"
           />
