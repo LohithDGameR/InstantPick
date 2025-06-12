@@ -133,7 +133,7 @@ const BestSeller = () => {
         {/* Left Scroll Button: Hidden on mobile (hidden) */}
         <button
           onClick={scrollPrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-green-700 text-white p-3 rounded-full shadow-lg hover:bg-green-800 focus:outline-none z-10 ml-2 transform active:scale-95 transition-transform hidden md:block" // `hidden md:block` hides on small screens, shows on medium and up
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-green-700 text-white p-3 rounded-full shadow-lg hover:bg-green-800 focus:outline-none z-10 ml-2 transform active:scale-95 transition-transform hidden md:block"
           aria-label="Previous products"
         >
           <ChevronLeft size={24} />
@@ -154,7 +154,10 @@ const BestSeller = () => {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="flex-none w-full sm:w-1/2 md:w-56" // `w-full` on mobile, `sm:w-1/2` on small screens (2 per row), `md:w-56` on medium and up
+              // FIX: Changed default width from w-full to w-1/2.
+              // Now, on all screen sizes below 'md', two cards will be visible.
+              // md:w-56 takes over for medium screens and up.
+              className="flex-none w-1/2 md:w-56"
             >
               <ProductCard product={product} bestSeller={true} />
             </div>
@@ -164,7 +167,7 @@ const BestSeller = () => {
         {/* Right Scroll Button: Hidden on mobile (hidden) */}
         <button
           onClick={scrollNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-green-700 text-white p-3 rounded-full shadow-lg hover:bg-green-800 focus:outline-none z-10 mr-2 transform active:scale-95 transition-transform hidden md:block" // `hidden md:block` hides on small screens, shows on medium and up
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-green-700 text-white p-3 rounded-full shadow-lg hover:bg-green-800 focus:outline-none z-10 mr-2 transform active:scale-95 transition-transform hidden md:block"
           aria-label="Next products"
         >
           <ChevronRight size={24} />
