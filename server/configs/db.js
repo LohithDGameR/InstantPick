@@ -6,7 +6,7 @@ const connectDB = async () => {
       console.log("Database Connected")
     );
     await mongoose.connect(`${process.env.MONGODB_URI}/
-instantpick`);
+instantpick_wallet_db`);
   } catch (error) {
     console.log(error.message);
   }

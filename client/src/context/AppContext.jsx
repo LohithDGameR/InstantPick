@@ -1,8 +1,15 @@
 // AppContext.jsx
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
+
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -14,25 +21,26 @@ export const AppContextProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
+  const [sellerData, setSellerData] = useState(null);
   const [showUserLogin, setShowUserLogin] = useState(false);
+
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
 
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
 
   // --- WALLET FEATURE ADDITIONS START ---
-  // State for wallet balance, initialized from localStorage
   const [walletBalance, setWalletBalance] = useState(() => {
     try {
       const storedBalance = localStorage.getItem("userWalletBalance");
       return storedBalance ? parseFloat(storedBalance) : 0;
     } catch (error) {
       console.error("Error parsing wallet balance from localStorage:", error);
-      return 0; // Default to 0 if there's an error
+      return 0;
     }
   });
 
-  // Effect to sync wallet balance to localStorage whenever it changes
   useEffect(() => {
     try {
       localStorage.setItem("userWalletBalance", walletBalance.toFixed(2));
@@ -41,7 +49,6 @@ export const AppContextProvider = ({ children }) => {
     }
   }, [walletBalance]);
 
-  // Function to add money to the wallet
   const addMoneyToWallet = (amount) => {
     if (isNaN(amount) || amount <= 0) {
       toast.error("Please enter a valid positive amount.");
@@ -51,7 +58,6 @@ export const AppContextProvider = ({ children }) => {
     toast.success(`${currency}${amount.toFixed(2)} added to your wallet!`);
   };
 
-  // Function to deduct money from the wallet
   const deductFromWallet = (amount) => {
     if (isNaN(amount) || amount <= 0) {
       toast.error("Invalid deduction amount.");
@@ -60,30 +66,34 @@ export const AppContextProvider = ({ children }) => {
     if (walletBalance >= amount) {
       setWalletBalance((prevBalance) => prevBalance - amount);
       toast.success(`${currency}${amount.toFixed(2)} deducted from wallet.`);
-      return true; // Deduction successful
+      return true;
     } else {
       toast.error("Insufficient wallet balance.");
-      return false; // Deduction failed
+      return false;
     }
   };
   // --- WALLET FEATURE ADDITIONS END ---
 
-  // Fetch Seller Status
   const fetchSeller = async () => {
     try {
       const { data } = await axios.get("/api/seller/is-auth");
       if (data.success) {
         setIsSeller(true);
+        setSellerData(data.seller);
       } else {
         setIsSeller(false);
+        setSellerData(null);
       }
     } catch (error) {
-      console.error("Error fetching seller status:", error);
+      console.error(
+        "Error fetching seller status:",
+        error.response?.data?.message || error.message
+      );
       setIsSeller(false);
+      setSellerData(null);
     }
   };
 
-  // Fetch User Auth Status, User Data and Cart Items
   const fetchUser = async () => {
     try {
       const { data } = await axios.get("/api/user/is-auth");
@@ -95,26 +105,56 @@ export const AppContextProvider = ({ children }) => {
         setCartItems({});
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error(
+        "Error fetching user data:",
+        error.response?.data?.message || error.message
+      );
       setUser(null);
       setCartItems({});
     }
   };
 
-  // Fetch All Products
-  const fetchProducts = async () => {
+  const fetchSellerProducts = useCallback(async () => {
     try {
-      const { data } = await axios.get("/api/product/list");
+      const { data } = await axios.get("/api/product/seller-list");
       if (data.success) {
         setProducts(data.products);
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
-      toast.error(error.response?.data?.message || error.message || "An error occurred while fetching products.");
+      console.error(
+        "Error fetching seller products:",
+        error.response?.data?.message || error.message
+      );
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "An error occurred while fetching seller products."
+      );
     }
-  };
+  }, [axios]);
+
+  const fetchAllProducts = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/product/all");
+      if (data.success) {
+        setAllProducts(data.products);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error(
+        "Error fetching all products:",
+        error.response?.data?.message || error.message
+      );
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "An error occurred while fetching all products."
+      );
+    }
+  }, [axios]);
 
   // Add Product to Cart
   const addToCart = (itemId) => {
@@ -162,10 +202,9 @@ export const AppContextProvider = ({ children }) => {
 
     let currentCartItems = cartItems || {};
     let cartData = structuredClone(currentCartItems);
-    
-    // Remove the entire product by deleting its entry from cartData
+
     delete cartData[itemId];
-    
+
     setCartItems(cartData);
     toast.success("Product removed from Cart");
   };
@@ -179,42 +218,66 @@ export const AppContextProvider = ({ children }) => {
     return totalCount;
   };
 
-  // Get Cart Total Amount
-  const getCartAmount = () => {
+  // Get Cart Total Amount (Updated for debugging and robustness)
+  const getCartAmount = useCallback(() => {
     let totalAmount = 0;
-    for (const items in cartItems) {
-      let itemInfo = products.find((product) => product._id === items);
-      if (itemInfo && cartItems[items] > 0) {
-        totalAmount += itemInfo.offerPrice * cartItems[items];
+    console.log("Calculating cart amount..."); // DEBUG
+    console.log("Current cartItems:", cartItems); // DEBUG
+    console.log("Current allProducts:", allProducts); // DEBUG
+
+    for (const itemId in cartItems) {
+      const quantity = cartItems[itemId];
+      // Ensure itemId exists in allProducts AND has a valid offerPrice
+      const itemInfo = allProducts.find((product) => product._id === itemId);
+
+      if (
+        itemInfo &&
+        typeof itemInfo.offerPrice === "number" &&
+        itemInfo.offerPrice >= 0
+      ) {
+        const itemPrice = itemInfo.offerPrice;
+        totalAmount += itemPrice * quantity;
+        console.log(
+          `  - Item: ${
+            itemInfo.name || itemId
+          }, Qty: ${quantity}, Price: ${itemPrice}, Subtotal: ${
+            itemPrice * quantity
+          }`
+        ); // DEBUG
+      } else {
+        console.warn(
+          `  - Warning: Product ID ${itemId} not found in allProducts or has invalid offerPrice (${itemInfo?.offerPrice}). Skipping calculation for this item.`
+        ); // DEBUG
       }
     }
-    return Math.floor(totalAmount * 100) / 100;
-  };
+    console.log("Final Calculated Cart Amount (before rounding):", totalAmount); // DEBUG
+    return Math.floor(totalAmount * 100) / 100; // Round to 2 decimal places
+  }, [cartItems, allProducts]); // Dependencies: cartItems, allProducts
 
   // Initial data fetching on component mount
   useEffect(() => {
     fetchUser();
     fetchSeller();
-    fetchProducts();
-  }, []);
+    fetchAllProducts();
+  }, [fetchAllProducts]);
 
   // Update Database Cart Items whenever cartItems state changes, if user is logged in
   useEffect(() => {
     const updateCartInDB = async () => {
-      if (user && (Object.keys(cartItems).length > 0 || Object.keys(user.cartItems || {}).length > 0)) {
+      if (user) {
         try {
           const { data } = await axios.post("/api/cart/update", {
             userId: user._id,
             cartItems: cartItems,
           });
           if (!data.success) {
-            toast.error(data.message);
-          } else {
-            console.log("Cart updated in DB successfully!");
+            console.error("Failed to update cart in DB:", data.message);
           }
         } catch (error) {
-          console.error("Error updating cart in DB:", error);
-          toast.error("Failed to update cart in database: " + error.message);
+          console.error(
+            "Error updating cart in DB:",
+            error.response?.data?.message || error.message
+          );
         }
       }
     };
@@ -226,7 +289,7 @@ export const AppContextProvider = ({ children }) => {
     return () => {
       clearTimeout(handler);
     };
-  }, [cartItems, user]);
+  }, [cartItems, user, axios]);
 
   const value = {
     navigate,
@@ -234,9 +297,11 @@ export const AppContextProvider = ({ children }) => {
     setUser,
     setIsSeller,
     isSeller,
+    sellerData,
     showUserLogin,
     setShowUserLogin,
     products,
+    allProducts,
     currency,
     addToCart,
     updateCartItem,
@@ -244,12 +309,12 @@ export const AppContextProvider = ({ children }) => {
     cartItems,
     searchQuery,
     setSearchQuery,
-    getCartAmount,
+    getCartAmount, // This is the useCallback version
     getCartCount,
     axios,
-    fetchProducts,
+    fetchSellerProducts,
+    fetchAllProducts,
     setCartItems,
-    // --- WALLET FEATURE EXPORTS ---
     walletBalance,
     addMoneyToWallet,
     deductFromWallet,

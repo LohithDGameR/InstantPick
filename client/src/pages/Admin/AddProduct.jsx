@@ -11,7 +11,8 @@ const AddProduct = () => {
   const [price, setPrice] = useState("");
   const [offerPrice, setOfferPrice] = useState("");
 
-  const { axios } = useAppContext();
+  // Destructure fetchSellerProducts and fetchAllProducts from context
+  const { axios, fetchSellerProducts, fetchAllProducts } = useAppContext();
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -33,26 +34,33 @@ const AddProduct = () => {
 
       if (data.success) {
         toast.success(data.message);
+        // Clear form fields
         setName("");
         setDescription("");
         setCategory("");
         setPrice("");
         setOfferPrice("");
         setFiles([]);
+
+        // --- CRUCIAL FIX: Re-fetch seller products AND ALL products after successful addition ---
+        fetchSellerProducts(); // Update admin's product list
+        fetchAllProducts(); // Update public product list so new product appears immediately
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 
   return (
-    <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll text-green-900">
+    <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll text-green-700">
       <form
         onSubmit={onSubmitHandler}
         className="md:p-10 p-4 space-y-6 max-w-3xl mx-auto bg-white rounded-xl shadow-md border border-green-100 mt-6">
-        <h2 className="text-2xl font-semibold text-center text-green-800 mb-4">🌱 Add New Product</h2>
+        <h2 className="text-2xl font-semibold text-center text-green-600 ml-2 relative mb-4">
+          🌱 Add New Product
+        </h2>
 
         {/* Image Upload */}
         <div>
@@ -89,7 +97,9 @@ const AddProduct = () => {
 
         {/* Product Name */}
         <div className="flex flex-col gap-1">
-          <label htmlFor="product-name" className="text-base font-medium">Product Name</label>
+          <label htmlFor="product-name" className="text-base font-medium">
+            Product Name
+          </label>
           <input
             id="product-name"
             type="text"
@@ -103,20 +113,25 @@ const AddProduct = () => {
 
         {/* Description */}
         <div className="flex flex-col gap-1">
-          <label htmlFor="product-description" className="text-base font-medium">Product Description</label>
+          <label
+            htmlFor="product-description"
+            className="text-base font-medium">
+            Product Description
+          </label>
           <textarea
             id="product-description"
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="e.g. Freshly harvested kale, rich in vitamins..."
-            className="bg-green-50 border border-green-300 rounded-md px-4 py-2 outline-none focus:ring-2 focus:ring-green-400 resize-none"
-          ></textarea>
+            className="bg-green-50 border border-green-300 rounded-md px-4 py-2 outline-none focus:ring-2 focus:ring-green-400 resize-none"></textarea>
         </div>
 
         {/* Category */}
         <div className="flex flex-col gap-1">
-          <label htmlFor="category" className="text-base font-medium">Category</label>
+          <label htmlFor="category" className="text-base font-medium">
+            Category
+          </label>
           <select
             id="category"
             value={category}
@@ -135,7 +150,9 @@ const AddProduct = () => {
         {/* Pricing */}
         <div className="flex flex-wrap gap-5">
           <div className="flex-1 flex flex-col gap-1 min-w-[120px]">
-            <label htmlFor="product-price" className="text-base font-medium">Product Price</label>
+            <label htmlFor="product-price" className="text-base font-medium">
+              Product Price
+            </label>
             <input
               id="product-price"
               type="number"
@@ -147,7 +164,9 @@ const AddProduct = () => {
             />
           </div>
           <div className="flex-1 flex flex-col gap-1 min-w-[120px]">
-            <label htmlFor="offer-price" className="text-base font-medium">Offer Price</label>
+            <label htmlFor="offer-price" className="text-base font-medium">
+              Offer Price
+            </label>
             <input
               id="offer-price"
               type="number"

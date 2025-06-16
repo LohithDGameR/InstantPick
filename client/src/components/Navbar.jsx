@@ -40,16 +40,16 @@ const Navbar = () => {
     }
   }, [searchQuery, navigate]);
 
-  const navLinkClasses = `text-gray-100 hover:text-white font-medium relative transition-colors duration-200 after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-white after:left-0 after:bottom-[-4px] hover:after:w-full after:transition-all after:duration-300`;
+  const navLinkClasses = `text-gray-200 hover:text-white font-medium relative transition-all duration-300 ease-in-out after:content-[''] after:absolute after:w-0 after:h-[2px] after:bg-white after:left-0 after:bottom-[-4px] hover:after:w-full after:transition-all after:duration-300 transform hover:scale-105`;
 
   return (
-    <nav className="w-full bg-gradient-to-b from-green-800 to-green-600 px-4 md:px-10 lg:px-16 flex items-center justify-between shadow-sm relative">
+    <nav className="w-full bg-gradient-to-b from-green-800 to-green-600 px-4 md:px-10 lg:px-16 flex items-center justify-between shadow-sm">
       {/* Logo */}
-      <NavLink to="/" onClick={() => setOpen(false)}>
+      <NavLink to="/" onClick={() => setOpen(false)} className="transform hover:scale-105 transition-transform duration-200">
         <img
           src={assets.logo}
           alt="Logo"
-          className="h-18 w-auto object-contain"
+          className="h-18 w-auto object-contain filter brightness-110"
         />
       </NavLink>
 
@@ -61,72 +61,66 @@ const Navbar = () => {
         <NavLink to="/products" className={navLinkClasses}>
           Products
         </NavLink>
-        <NavLink to="/" className={navLinkClasses}>
-          Contact
+        <NavLink to="/contact-us" className={navLinkClasses}>
+          Contact Us
         </NavLink>
         {/* Wallet Link */}
-        <NavLink to="/wallet" className={navLinkClasses}>
-          <div className="flex items-center gap-1">
-            <img src={assets.wallet_icon_white} alt="Wallet" className="w-5 h-5" />
-            <span>Wallet Balance: {currency}{walletBalance.toFixed(2)}</span>
+        <NavLink to="/wallet" className={`${navLinkClasses} text-green-100 hover:text-white font-semibold`}>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-700/30 backdrop-blur-sm border border-green-500/20 hover:bg-green-600/40 transition-all duration-300">
+            <img src={assets.wallet_icon_white} alt="Wallet" className="w-4 h-4 opacity-90" />
+            <span className="text-sm">
+              <span className="text-gray-300">Balance:</span> 
+              <span className="text-white font-bold ml-1">{currency}{walletBalance.toFixed(2)}</span>
+            </span>
           </div>
         </NavLink>
 
-        <div className="hidden lg:flex items-center bg-white rounded-full px-4 py-1 border border-green-300">
+        <div className="hidden lg:flex items-center bg-white/95 backdrop-blur-sm rounded-full px-4 py-2 border border-green-300/50 shadow-md hover:shadow-lg transition-all duration-300 hover:bg-white focus-within:ring-2 focus-within:ring-green-400/50">
           <input
             type="text"
             placeholder="Search veggies..."
-            className="outline-none text-sm bg-transparent w-40 text-gray-700"
+            className="outline-none text-sm bg-transparent w-40 text-gray-700 placeholder-gray-500"
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <img
             src={assets.search_icon}
             alt="Search"
-            className="w-4 h-4 ml-2 opacity-70"
+            className="w-4 h-4 ml-2 opacity-60 hover:opacity-80 transition-opacity duration-200"
           />
         </div>
 
         <div
           onClick={() => navigate("/cart")}
-          className="relative cursor-pointer">
-          <img src={assets.nav_cart_icon_white} alt="Cart" className="w-6 hover:scale-110" />
-          <span className="absolute -top-2 -right-2 bg-cart text-black text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+          className="relative cursor-pointer transform hover:scale-110 transition-all duration-200 group">
+          <img src={assets.nav_cart_icon_white} alt="Cart" className="w-6 filter brightness-110" />
+          <span className="absolute -top-2 -right-2 bg-cart text-black text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-md group-hover:scale-110 transition-transform duration-200 border-2 border-white">
             {getCartCount()}
           </span>
         </div>
 
         {!user ? (
           <button
-            onClick={() => setShowUserLogin(true)}
-            className="bg-white text-green-600 px-5 py-1.5 rounded-full font-semibold hover:bg-green-100 transition cursor-pointer">
+            onClick={() => {
+              console.log("Navbar: Login button clicked!");
+              setShowUserLogin(true);
+            }}
+            className="bg-white text-green-700 px-6 py-2 rounded-full font-semibold hover:bg-green-50 hover:text-green-800 transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg transform hover:scale-105 border-2 border-transparent hover:border-green-200">
             Login
           </button>
         ) : (
-          <div className="relative group">
+          <div className="relative group z-50">
             <img
               src={assets.profile_icon}
-              className="w-10 rounded-full border-2 border-white cursor-pointer shadow-md"
+              className="w-10 h-10 rounded-full border-3 border-white cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ring-2 ring-green-400/30"
               alt="profile"
             />
-            <ul className="hidden group-hover:block absolute top-10 right-0 bg-white shadow-xl border border-gray-200 py-2 w-36 rounded-lg text-sm text-gray-800 z-40 animate-fade-in">
-              <li
-                onClick={() => {
-                  navigate("/seller");
-                  setOpen(false);
-                }}
-                // Removed flex items-center gap-2 as icon is removed
-                className="p-2 pl-4 hover:bg-green-50 cursor-pointer">
-                {/* Removed img tag for orders_icon */}
-                Admin Dashboard
-              </li>
+            <ul className="invisible group-hover:visible opacity-0 group-hover:opacity-100 absolute top-12 right-0 bg-white shadow-2xl border border-gray-200 py-2 w-40 rounded-xl text-sm z-50 transition-all duration-200">
               <li
                 onClick={() => {
                   navigate("/my-orders");
                   setOpen(false);
                 }}
-                // Removed flex items-center gap-2 as icon is removed
-                className="p-2 pl-4 hover:bg-green-50 cursor-pointer">
-                {/* Removed img tag for orders_icon */}
+                className="px-4 py-2.5 hover:bg-green-50 cursor-pointer text-gray-700 hover:text-green-700 transition-all duration-200 font-medium">
                 My Orders
               </li>
               <li
@@ -134,16 +128,12 @@ const Navbar = () => {
                   navigate("/wallet");
                   setOpen(false);
                 }}
-                // Removed flex items-center gap-2 as icon is removed
-                className="p-2 pl-4 hover:bg-green-50 cursor-pointer">
-                {/* Removed img tag for orders_icon */}
+                className="px-4 py-2.5 hover:bg-green-50 cursor-pointer text-gray-700 hover:text-green-700 transition-all duration-200 font-medium">
                 My Wallet
               </li>
               <li
                 onClick={logout}
-                // Changed text color to red and removed flex items-center gap-2 as icon is removed
-                className="p-2 pl-4 hover:bg-red-50 cursor-pointer text-red-600">
-                {/* Removed img tag for logout_icon */}
+                className="px-4 py-2.5 hover:bg-red-50 cursor-pointer text-red-600 hover:text-red-700 transition-all duration-200 font-medium">
                 Logout
               </li>
             </ul>
@@ -151,74 +141,75 @@ const Navbar = () => {
         )}
       </div>
 
-
       {/* Mobile Controls */}
       <div className="flex sm:hidden items-center gap-4">
         <div
           onClick={() => navigate("/cart")}
-          className="relative cursor-pointer">
-          <img src={assets.nav_cart_icon_white} alt="Cart" className="w-6 hover:scale-110" />
-          <span className="absolute -top-2 -right-2 bg-cart text-black text-xs w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold">
+          className="relative cursor-pointer transform hover:scale-110 transition-all duration-200 group">
+          <img src={assets.nav_cart_icon_white} alt="Cart" className="w-6 filter brightness-110" />
+          <span className="absolute -top-2 -right-2 bg-cart text-black text-xs w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold shadow-md group-hover:scale-110 transition-transform duration-200 border-2 border-white">
             {getCartCount()}
           </span>
         </div>
-        <button onClick={() => setOpen(!open)} aria-label="Menu">
+        <button 
+          onClick={() => setOpen(!open)} 
+          aria-label="Menu"
+          className="transform hover:scale-110 transition-all duration-200 p-1">
           <img
             src={open ? assets.close_icon_white : assets.menu_icon}
             alt="Toggle menu"
-            className="w-6 cursor-pointer"
+            className="w-6 cursor-pointer filter brightness-110"
           />
         </button>
       </div>
 
       {/* Mobile Menu */}
       {open && (
-        <div className="absolute top-full left-0 w-full bg-white border-t border-green-200 sm:hidden flex flex-col gap-4 px-6 py-5 shadow-md z-50">
+        <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-t border-green-200/50 sm:hidden flex flex-col gap-4 px-6 py-6 shadow-xl z-50 transform translate-y-0 transition-all duration-300 animate-slide-down">
           <NavLink
             to="/"
             onClick={() => setOpen(false)}
-            className="text-gray-900 hover:text-green-600 hover:underline transition-all duration-200">
+            className="text-gray-800 hover:text-green-600 hover:pl-2 transition-all duration-300 font-medium py-1 border-l-3 border-transparent hover:border-green-500">
             Home
           </NavLink>
           <NavLink
             to="/products"
             onClick={() => setOpen(false)}
-            className="text-gray-700 hover:text-green-600 hover:underline transition-all duration-200">
+            className="text-gray-700 hover:text-green-600 hover:pl-2 transition-all duration-300 font-medium py-1 border-l-3 border-transparent hover:border-green-500">
             Products
-          </NavLink>
-          <NavLink
-            to="/seller"
-            onClick={() => setOpen(false)}
-            className="text-gray-700 hover:text-green-600 hover:underline transition-all duration-200">
-            Admin Dashboard
           </NavLink>
           {user && (
             <>
               <NavLink
                 to="/my-orders"
                 onClick={() => setOpen(false)}
-                className="text-gray-700 hover:text-green-600 hover:underline transition-all duration-200">
+                className="text-gray-700 hover:text-green-600 hover:pl-2 transition-all duration-300 font-medium py-1 border-l-3 border-transparent hover:border-green-500">
                 My Orders
               </NavLink>
               <NavLink
                 to="/wallet"
                 onClick={() => setOpen(false)}
-                className="text-gray-700 hover:text-green-600 hover:underline transition-all duration-200">
-                My Wallet
+                className="text-gray-700 hover:text-green-600 hover:pl-2 transition-all duration-300 font-medium py-1 border-l-3 border-transparent hover:border-green-500">
+                <div className="flex items-center gap-2">
+                  <span>My Wallet</span>
+                  <span className="text-green-600 font-bold text-sm">
+                    {currency}{walletBalance.toFixed(2)}
+                  </span>
+                </div>
               </NavLink>
             </>
           )}
-          <div className="flex items-center border border-green-200 px-4 py-2 rounded-full bg-green-50 mt-2">
+          <div className="flex items-center border border-green-300/50 px-4 py-3 rounded-full bg-green-50/80 backdrop-blur-sm mt-2 focus-within:ring-2 focus-within:ring-green-400/50 transition-all duration-300">
             <input
               type="text"
-              placeholder="Search..."
-              className="bg-transparent outline-none w-full text-sm"
+              placeholder="Search veggies..."
+              className="bg-transparent outline-none w-full text-sm text-gray-700 placeholder-gray-500"
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <img
               src={assets.search_icon}
               alt="Search"
-              className="w-5 h-5 opacity-70 ml-2"
+              className="w-5 h-5 opacity-60 ml-2 hover:opacity-80 transition-opacity duration-200"
             />
           </div>
           {!user ? (
@@ -227,13 +218,13 @@ const Navbar = () => {
                 setShowUserLogin(true);
                 setOpen(false);
               }}
-              className="w-full bg-green-600 text-white py-2 rounded-full font-medium mt-3 cursor-pointer">
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-full font-semibold mt-3 cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]">
               Login
             </button>
           ) : (
             <button
               onClick={logout}
-              className="w-full bg-red-500 text-white py-2 rounded-full font-medium mt-3 cursor-pointer">
+              className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-full font-semibold mt-3 cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]">
               Logout
             </button>
           )}

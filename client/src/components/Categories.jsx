@@ -4,32 +4,29 @@ import { useAppContext } from "../context/AppContext";
 
 const Categories = () => {
   const { navigate } = useAppContext();
-  const scrollRef = useRef(null); // Reference to the scrollable container
+  const scrollRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const scrollSpeedRef = useRef(0.5); // Controls auto-scroll speed
 
-  // States for automatic scrolling
-  const [isHovered, setIsHovered] = useState(false); // True when mouse is over container
-  const scrollSpeedRef = useRef(0.5); // Controls automatic scroll speed
+  // States for manual drag scroll functionality (mouse and touch)
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
-  // States for manual drag scroll functionality
-  const [isDragging, setIsDragging] = useState(false); // True when the user is actively dragging
-  const [startX, setStartX] = useState(0); // Stores the initial X position of the mouse/touch
-  const [scrollLeft, setScrollLeft] = useState(0); // Stores the initial scrollLeft position of the container
-
-  // --- Automatic Scrolling Logic ---
+  // --- Auto-Scrolling Logic ---
   useEffect(() => {
     const container = scrollRef.current;
     let animationFrameId;
 
     const scroll = () => {
-      // Auto-scroll only if not hovered AND not currently dragging
+      // Auto-scroll only if not hovered AND not currently dragging manually
       if (container && !isHovered && !isDragging) {
         container.scrollLeft += scrollSpeedRef.current;
 
-        // Reset when end is reached
-        // Added a small buffer (e.g., 1px) to prevent floating point issues with Math.ceil
+        // Reset when end is reached to create a continuous loop
         if (
           Math.ceil(container.scrollLeft + container.clientWidth) >=
-          container.scrollWidth - 1 // -1 for a tiny buffer
+          container.scrollWidth
         ) {
           container.scrollLeft = 0;
         }
@@ -38,102 +35,93 @@ const Categories = () => {
       animationFrameId = requestAnimationFrame(scroll);
     };
 
-    animationFrameId = requestAnimationFrame(scroll);
+    animationFrameId = requestAnimationFrame(scroll); // Start auto-scroll on mount
 
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered, isDragging]); // Dependency array includes isDragging to react to its changes
+    return () => cancelAnimationFrame(animationFrameId); // Clean up on unmount
+  }, [isHovered, isDragging]); // Depend on isHovered and isDragging to control auto-scroll
 
-  // --- Manual Drag Scroll Event Handlers ---
-
-  // handleMouseDown: Initiates the drag operation on mouse click
+  // --- Manual Drag Scroll Event Handlers (Mouse) ---
   const handleMouseDown = useCallback((e) => {
     if (!scrollRef.current) return;
-    setIsDragging(true); // Set dragging to true
-    // Calculate startX relative to the scroll container's left edge
+    setIsDragging(true);
     setStartX(e.pageX - scrollRef.current.offsetLeft);
     setScrollLeft(scrollRef.current.scrollLeft);
-    scrollRef.current.style.cursor = 'grabbing'; // Change cursor
+    // Apply grabbing cursor directly to the container for immediate feedback
+    scrollRef.current.style.cursor = "grabbing";
   }, []);
 
-  // handleMouseMove: Scrolls the container while dragging
-  const handleMouseMove = useCallback((e) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault(); // Prevent unwanted actions like text selection during drag
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Calculate how much to scroll based on mouse movement (1.5x speed multiplier)
-    scrollRef.current.scrollLeft = scrollLeft - walk; // Update scroll position
-  }, [isDragging, startX, scrollLeft]);
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!isDragging || !scrollRef.current) return;
+      e.preventDefault(); // Prevent default browser drag behaviors (e.g., image selection)
+      const x = e.pageX - scrollRef.current.offsetLeft;
+      const walk = (x - startX) * 1.5; // Adjust scroll speed for manual drag
+      scrollRef.current.scrollLeft = scrollLeft - walk;
+    },
+    [isDragging, startX, scrollLeft]
+  );
 
-  // handleMouseUp: Ends the drag operation on mouse release
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false); // Set dragging to false
+    setIsDragging(false);
     if (scrollRef.current) {
-      scrollRef.current.style.cursor = 'grab'; // Reset cursor
+      scrollRef.current.style.cursor = "grab"; // Revert cursor to grab
     }
   }, []);
 
-  // handleMouseLeave: Ends the drag operation if the mouse leaves the container
+  // --- Combined Mouse Leave Handler for Auto-scroll and Dragging ---
   const handleMouseLeave = useCallback(() => {
-    if (isDragging) { // Only reset if dragging was active when mouse left
+    setIsHovered(false); // Resume auto-scroll
+    // If dragging stops because mouse left the container, reset drag state
+    if (isDragging) {
       setIsDragging(false);
       if (scrollRef.current) {
-        scrollRef.current.style.cursor = 'grab'; // Reset cursor
+        scrollRef.current.style.cursor = "grab"; // Revert cursor
       }
     }
-    setIsHovered(false); // Also handle mouse leave for auto-scroll pause
-  }, [isDragging]);
+  }, [isDragging]); // setIsHovered is a setter, so it's stable and doesn't need to be a dependency.
 
-  // --- Touch Event Handlers for Mobile Drag Scroll ---
-
-  // handleTouchStart: Initiates the drag operation on touch start
+  // --- Touch Event Handlers (for Mobile/Tablet) ---
   const handleTouchStart = useCallback((e) => {
     if (!scrollRef.current || e.touches.length === 0) return;
-    setIsDragging(true); // Set dragging to true
+    setIsDragging(true);
     setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft);
     setScrollLeft(scrollRef.current.scrollLeft);
   }, []);
 
-  // handleTouchMove: Scrolls the container while touching and dragging
-  const handleTouchMove = useCallback((e) => {
-    if (!isDragging || !scrollRef.current || e.touches.length === 0) return;
-    const x = e.touches[0].pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Adjust scroll speed
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  }, [isDragging, startX, scrollLeft]);
+  const handleTouchMove = useCallback(
+    (e) => {
+      if (!isDragging || !scrollRef.current || e.touches.length === 0) return;
+      // e.preventDefault(); // Prevent vertical scrolling interference if needed, but often not
+      const x = e.touches[0].pageX - scrollRef.current.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      scrollRef.current.scrollLeft = scrollLeft - walk;
+    },
+    [isDragging, startX, scrollLeft]
+  );
 
-  // handleTouchEnd: Ends the drag operation on touch release
   const handleTouchEnd = useCallback(() => {
-    setIsDragging(false); // Set dragging to false
+    setIsDragging(false);
   }, []);
-
 
   return (
     <div className="mt-16 relative">
-      <p className="text-2xl md:text-3xl font-medium mb-6 text-center">
-        Explore Our Categories
+      <p className="text-2xl md:text-3xl font-medium mb-6 text-center text-gray-800">
+        Explore Our <span className="text-primary">Categories</span>
       </p>
 
       <div
         ref={scrollRef}
-        // `overflow-x-scroll` allows native scrolling.
-        // `no-scrollbar` hides the scrollbar (optional, but keeps clean look).
-        // `scroll-smooth` makes programmatic scrolls (if any were added) smooth.
-        // `cursor-grab` provides visual feedback that the element is draggable.
         className="flex overflow-x-scroll no-scrollbar gap-6 py-2 px-4 scroll-smooth cursor-grab"
-        // Event handlers for automatic scrolling pause on hover
         onMouseEnter={() => setIsHovered(true)}
-        // `onMouseLeave` is now combined with `handleMouseLeave` to avoid conflicts
-        // onMouseLeave={() => setIsHovered(false)} // Removed, handled in handleMouseLeave
-        // Attach manual drag scroll event listeners
+        // Attach the combined mouse leave handler
+        onMouseLeave={handleMouseLeave}
+        // Attach manual scrolling event handlers
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave} // This now also handles setting isHovered to false
-        // Attach touch scroll event listeners for mobile devices
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+        onTouchEnd={handleTouchEnd}>
         {categories.map((category, index) => (
           <div
             key={index}
@@ -141,9 +129,8 @@ const Categories = () => {
             style={{ backgroundColor: category.bgColor }}
             onClick={() => {
               navigate(`/products/${category.path.toLowerCase()}`);
-              window.scrollTo(0, 0); // Scrolls to the top of the page when navigating
-            }}
-          >
+              window.scrollTo(0, 0);
+            }}>
             <img
               src={category.image}
               alt={category.text}

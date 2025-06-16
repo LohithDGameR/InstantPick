@@ -38,66 +38,75 @@ const Login = () => {
       <form
         onSubmit={onSubmitHandler}
         onClick={(e) => e.stopPropagation()}
-        className="flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] rounded-lg shadow-xl border border-gray-200 bg-white">
-        <p className="text-2xl font-medium m-auto">
+        className="animate-fadeInUp flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] rounded-xl shadow-xl border border-gray-100 bg-white backdrop-blur-sm">
+        <p className="text-2xl font-bold m-auto text-gray-800">
           <span className="text-primary">User</span>{" "}
           {state === "login" ? "Login" : "Sign Up"}
         </p>
+
         {state === "register" && (
           <div className="w-full">
-            <p>Name</p>
+            <p className="text-gray-700">Name</p>
             <input
               onChange={(e) => setName(e.target.value)}
               value={name}
               placeholder="type here"
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
+              className="border border-gray-200 rounded-md w-full p-2 mt-1 outline-primary"
               type="text"
               required
             />
           </div>
         )}
-        <div className="w-full ">
-          <p>Email</p>
+
+        <div className="w-full">
+          <p className="text-gray-700">Email</p>
           <input
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             placeholder="type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
+            className="border border-gray-200 rounded-md w-full p-2 mt-1 outline-primary"
             type="email"
             required
           />
         </div>
-        <div className="w-full ">
-          <p>Password</p>
+
+        <div className="w-full">
+          <p className="text-gray-700">Password</p>
           <input
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             placeholder="type here"
-            className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
+            className="border border-gray-200 rounded-md w-full p-2 mt-1 outline-primary"
             type="password"
             required
           />
         </div>
-        {state === "register" ? (
-          <p>
-            Already have account?{" "}
-            <span
-              onClick={() => setState("login")}
-              className="text-primary cursor-pointer">
-              click here
-            </span>
-          </p>
-        ) : (
-          <p>
-            Create an account?{" "}
-            <span
-              onClick={() => setState("register")}
-              className="text-primary cursor-pointer">
-              click here
-            </span>
-          </p>
-        )}
-        <button className="bg-primary hover:bg-primary-dull transition-all text-white w-full py-2 rounded-md cursor-pointer">
+
+        <p className="text-sm text-gray-600 mt-2">
+          {state === "register" ? (
+            <>
+              Already have an account?{" "}
+              <span
+                onClick={() => setState("login")}
+                className="text-primary cursor-pointer underline hover:text-primary-dull transition-colors">
+                Click here
+              </span>
+            </>
+          ) : (
+            <>
+              Create an account?{" "}
+              <span
+                onClick={() => setState("register")}
+                className="text-primary cursor-pointer underline hover:text-primary-dull transition-colors">
+                Click here
+              </span>
+            </>
+          )}
+        </p>
+
+        <button
+          type="submit"
+          className="bg-primary hover:bg-primary-dull transition-all text-white w-full py-2 mt-2 rounded-md font-semibold shadow-md transform hover:scale-105 hover:-translate-y-0.5">
           {state === "register" ? "Create Account" : "Login"}
         </button>
       </form>

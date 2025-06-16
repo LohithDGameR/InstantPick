@@ -25,15 +25,15 @@ export const register = async (req, res) => {
     });
 
     res.cookie("token", token, {
-      httpOnly: true, // Prevent JavaScript to access cookie
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict", // CSRF protection
-      maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expiration time
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Changed from "none" to "lax" for development
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.json({
       success: true,
-      user: { email: user.email, name: user.name },
+      user: { email: user.email, name: user.name, _id: user._id },
     });
   } catch (error) {
     console.log(error.message);
@@ -42,7 +42,6 @@ export const register = async (req, res) => {
 };
 
 // Login User : /api/user/login
-
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -69,14 +68,15 @@ export const login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      // IMPORTANT CHANGE: Set secure to false for HTTP, sameSite to 'lax' for dev.
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Changed from "none" to "lax" for development
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.json({
       success: true,
-      user: { email: user.email, name: user.name },
+      user: { email: user.email, name: user.name, _id: user._id },
     });
   } catch (error) {
     console.log(error.message);
@@ -87,11 +87,13 @@ export const login = async (req, res) => {
 // Check Auth : /api/user/is-auth
 export const isAuth = async (req, res) => {
   try {
-    // Access userId from req.userId
-    const userId = req.userId;
+    const userId = req.userId; // userId is set by the authUser middleware
 
     if (!userId) {
-      return res.json({ success: false, message: "User ID not found in request" });
+      return res.json({
+        success: false,
+        message: "User ID not found in request (middleware failed)",
+      });
     }
 
     const user = await User.findById(userId).select("-password");
@@ -108,13 +110,13 @@ export const isAuth = async (req, res) => {
 };
 
 // Logout User : /api/user/logout
-
 export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      // IMPORTANT CHANGE: Set secure to false for HTTP, sameSite to 'lax' for dev.
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Changed from "none" to "lax" for development
     });
     return res.json({ success: true, message: "Logged Out" });
   } catch (error) {

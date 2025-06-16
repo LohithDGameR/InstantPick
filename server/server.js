@@ -11,6 +11,7 @@ import cartRouter from "./routes/cartRoute.js";
 import addressRouter from "./routes/addressRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import { stripeWebhooks } from "./controllers/orderController.js";
+import deliveryRouter from "./routes/deliveryRoute.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -18,19 +19,17 @@ const port = process.env.PORT || 4000;
 await connectDB();
 await connectCloudinary();
 
-// Allow multiple origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://instant-pick.vercel.app",
-];
+const allowedOrigins = ["http://localhost:5173", "https://instant-pick.vercel.app"];
 
+// Stripe webhook raw body parser route must be before json middleware
 app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
 
-// Middleware configuration
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cors({origin: allowedOrigins, credentials: true,}));
 
+// Existing routes
 app.get("/", (req, res) => res.send("API is Working"));
 app.use("/api/user", userRouter);
 app.use("/api/seller", sellerRouter);
@@ -38,6 +37,7 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/delivery", deliveryRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
