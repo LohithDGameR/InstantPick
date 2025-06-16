@@ -53,7 +53,7 @@ import spinach_image_1 from "./spinach_image_1.png";
 import onion_image_1 from "./onion_image_1.png";
 import wallet_icon from "./wallet_icon.png";
 import wallet_icon_white from "./wallet_icon_white.png";
-import Analytics_icon from "./analytics_icon.png";
+import analytics_icon from "./analytics_icon.png";
 import logout_icon from "./logout_icon.png";
 import dashboard_icon from "./dashboard_icon.png";
 
@@ -97,7 +97,7 @@ export const assets = {
   box_icon,
   wallet_icon,
   wallet_icon_white,
-  Analytics_icon,
+  analytics_icon,
   logout_icon,
   dashboard_icon,
 };

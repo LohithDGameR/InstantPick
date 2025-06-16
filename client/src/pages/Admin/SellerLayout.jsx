@@ -14,7 +14,7 @@ const SellerLayout = () => {
     {
       name: "Analytics",
       path: "/seller/analytics",
-      icon: assets.Analytics_icon,
+      icon: assets.analytics_icon,
     },
     { name: "Add Product", path: "/seller/add-product", icon: assets.add_icon },
     {
