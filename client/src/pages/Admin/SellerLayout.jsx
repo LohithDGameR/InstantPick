@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { assets } from "../../assets/assets";
 import { useAppContext } from "../../context/AppContext";
 import { Menu, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { assets } from "../../assets/assets";
 
 const SellerLayout = () => {
   const { axios, navigate } = useAppContext();
