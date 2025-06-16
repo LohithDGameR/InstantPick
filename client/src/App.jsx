@@ -35,7 +35,7 @@ import Analytics from "./pages/Admin/Analytics.jsx";
 import { DeliveryContextProvider } from "./context/DeliveryContext.jsx"; // This provider is separate and correctly used here
 import DeliveryLogin from "./components/delivery/DeliveryLogin.jsx";
 import DeliveryRegister from "./components/delivery/DeliveryRegister.jsx";
-import DeliveryDashboard from "./pages/delivery/DeliveryDashboard.jsx";
+import DeliveryDashboard from "./components/delivery/DeliveryDashboard.jsx";
 import ProtectedRouteDelivery from "./components/delivery/ProtectedRouteDelivery.jsx";
 import DeliveryLayout from "./components/delivery/DeliveryLayout.jsx";
 
