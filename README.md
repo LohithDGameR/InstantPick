@@ -254,3 +254,9 @@ Here's a glimpse of the project in action:
 ### Project Demo Video
 
 https://drive.google.com/file/d/12oEDQr5ml3kVHxBuB79yvxUw64OiS4yf/view?usp=drivesdk
+
+---
+
+### Project Demo Live Link
+
+https://instant-pick.vercel.app
