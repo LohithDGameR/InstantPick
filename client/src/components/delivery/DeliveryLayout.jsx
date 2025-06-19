@@ -107,7 +107,7 @@ const DeliveryLayout = () => {
         <div className="mt-auto pt-6 border-t border-green-700 animate-slideUp">
           <button
             onClick={logoutDelivery}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-md shadow-lg hover:bg-red-700 hover:scale-105 transform transition-all duration-200 font-medium">
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-md shadow-lg hover:bg-red-700 hover:scale-105 transform transition-all duration-200 font-medium cursor-pointer">
             <img src={assets.logout_icon} alt="Logout" className="w-5 h-5" />
             Logout
           </button>

@@ -146,7 +146,6 @@ const DeliveryDashboard = () => {
                 <th className="px-4 py-3 text-left">Placed On</th>
                 <th className="px-4 py-3 text-left">Order Status</th>
                 <th className="px-4 py-3 text-left">Delivery Boy</th>
-                <th className="px-4 py-3 text-left">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">

@@ -121,7 +121,7 @@ const SellerLogin = () => {
 
           <button
             type="submit"
-            className="bg-green-700 text-white w-full py-2 rounded-md hover:bg-green-800 transition duration-200">
+            className="bg-green-700 text-white w-full py-2 rounded-md hover:bg-green-800 transition duration-200 cursor-pointer">
             {isRegisterMode ? "Register" : "Login"}
           </button>
 
